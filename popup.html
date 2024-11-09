@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Content Filter</title>
+  <title>Content Filter and Highlighter</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h2>Filter and Highlight</h2>
+  <h2>Highlight Options</h2>
   <input type="text" id="keyword" placeholder="Enter keyword">
+  
   <div>
-    <input type="radio" id="highlight" name="filterOption" value="highlight" checked>
-    <label for="highlight">Highlight</label>
-    <input type="radio" id="hide" name="filterOption" value="hide">
-    <label for="hide">Hide</label>
+    <label for="colour">Choose Colour:</label>
+    <select id="colour">
+      <option value="yellow">Yellow</option>
+      <option value="pink">Pink</option>
+      <option value="lightblue">Light Blue</option>
+    </select>
   </div>
-  <button id="applyFilter">Apply Filter</button>
+  
+  <button id="applyHighlight">Highlight</button>
+  <button id="removeHighlights">Remove Highlights</button>
 
   <script src="popup.js"></script>
 </body>

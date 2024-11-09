@@ -1,72 +1,82 @@
 // Function to highlight text matching the keyword
-function highlightText(keyword) {
-  const regex = new RegExp(`(${keyword})`, 'gi'); // Case-insensitive match for keyword
-  
-  // Traverse DOM nodes and wrap matched keyword in a span
+function highlightText(keyword, colour) {
+  const regex = new RegExp(`(${keyword})`, 'gi');
+
   walkDOM(document.body, (node) => {
     if (node.nodeType === Node.TEXT_NODE && regex.test(node.textContent)) {
       const parent = node.parentNode;
-      const parts = node.textContent.split(regex); // Split text around matches
-
-      // Create a fragment to hold new nodes for better performance
+      const parts = node.textContent.split(regex);
+      
+      // Create a fragment for performance
       const fragment = document.createDocumentFragment();
       parts.forEach((part) => {
         if (regex.test(part)) {
-          // Create and style the highlight span for matched keyword
           const span = document.createElement("span");
-          span.className = "highlight";
+          span.className = `highlight ${colour}`;
           span.textContent = part;
           fragment.appendChild(span);
         } else {
-          // Add normal text nodes
           fragment.appendChild(document.createTextNode(part));
         }
       });
+      
+      parent.replaceChild(fragment, node);
+    }
+  });
+  
+  saveHighlight(keyword, colour);
+}
 
-      parent.replaceChild(fragment, node); // Replace original text node with fragment
+// Save highlight data to storage
+function saveHighlight(keyword, colour) {
+  chrome.storage.local.get({ highlights: [] }, (data) => {
+    const newHighlight = { keyword, colour };
+    const updatedHighlights = [...data.highlights, newHighlight];
+    chrome.storage.local.set({ highlights: updatedHighlights });
+  });
+}
+
+// Function to remove all highlights
+function removeHighlights() {
+  const highlights = document.querySelectorAll("span.highlight");
+  highlights.forEach((highlight) => {
+    const textNode = document.createTextNode(highlight.textContent);
+    highlight.replaceWith(textNode);
+  });
+  
+  chrome.storage.local.set({ highlights: [] }); // Clear saved highlights
+}
+
+// Restore highlights after page load
+function restoreHighlights() {
+  chrome.storage.local.get("highlights", (data) => {
+    if (data.highlights && data.highlights.length > 0) {
+      data.highlights.forEach(({ keyword, colour }) => {
+        highlightText(keyword, colour);
+      });
     }
   });
 }
 
-// Function to hide elements containing the keyword
-function hideContent(keyword) {
-  const regex = new RegExp(keyword, 'i'); // Case-insensitive match for keyword
-  walkDOM(document.body, (node) => {
-    if (node.nodeType === Node.TEXT_NODE && regex.test(node.textContent)) {
-      node.parentElement.style.display = "none"; // Hide parent element
-    }
-  });
-}
-
-// Utility function to walk through DOM nodes efficiently
+// DOM traversal function
 function walkDOM(root, callback) {
   let node = root.firstChild;
   while (node) {
-    const nextNode = node.nextSibling; // Store next node reference
-    callback(node); // Apply callback function to current node
-    if (node.firstChild) walkDOM(node, callback); // Recursively process child nodes
+    const nextNode = node.nextSibling;
+    callback(node);
+    if (node.firstChild) walkDOM(node, callback);
     node = nextNode;
   }
 }
 
-// Listener for messages from popup.js
+// Message listener for popup actions
 chrome.runtime.onMessage.addListener((request) => {
-  if (request.keyword) {
-    clearHighlights(); // Clear any previous highlights before applying new ones
-    if (request.action === "highlight") {
-      highlightText(request.keyword); // Apply highlight
-    } else if (request.action === "hide") {
-      hideContent(request.keyword); // Apply hide
-    }
+  if (request.action === "highlight" && request.keyword) {
+    highlightText(request.keyword, request.colour);
+  } else if (request.action === "removeHighlights") {
+    removeHighlights();
   }
 });
 
-// Clear any previous highlights to avoid duplicating highlights
-function clearHighlights() {
-  const highlightedElements = document.querySelectorAll("span.highlight");
-  highlightedElements.forEach((element) => {
-    // Replace highlight span with plain text node
-    const textNode = document.createTextNode(element.textContent);
-    element.replaceWith(textNode);
-  });
-}
+// On page load, restore highlights
+document.addEventListener("DOMContentLoaded", restoreHighlights);
