@@ -1,0 +1,12 @@
+/* Style for highlighted text */
+.highlight {
+    background-color: yellow;
+    font-weight: bold;
+  }
+  
+  /* Style for popup */
+  body {
+    width: 200px;
+    font-family: Arial, sans-serif;
+  }
+  
