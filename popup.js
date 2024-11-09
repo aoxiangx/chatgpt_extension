@@ -1,25 +1,21 @@
-// Select elements
 const keywordInput = document.getElementById("keyword");
 const applyButton = document.getElementById("applyFilter");
+const filterOptions = document.getElementsByName("filterOption");
 
-// Load saved keyword on popup open
-chrome.storage.sync.get("keyword", ({ keyword }) => {
-  if (keyword) {
-    keywordInput.value = keyword;
-  }
+chrome.storage.sync.get(["keyword", "filterOption"], ({ keyword, filterOption }) => {
+  if (keyword) keywordInput.value = keyword;
+  if (filterOption) document.getElementById(filterOption).checked = true;
 });
 
-// Listen for button click to save the keyword and trigger content script
 applyButton.addEventListener("click", () => {
   const keyword = keywordInput.value;
-  
-  // Save keyword to Chrome storage
-  chrome.storage.sync.set({ keyword }, () => {
-    console.log(`Keyword "${keyword}" saved.`);
+  const selectedOption = [...filterOptions].find(option => option.checked).value;
+
+  chrome.storage.sync.set({ keyword, filterOption: selectedOption }, () => {
+    console.log(`Keyword "${keyword}" and option "${selectedOption}" saved.`);
   });
-  
-  // Send message to content script to highlight content
+
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { action: "highlight", keyword });
+    chrome.tabs.sendMessage(tabs[0].id, { action: selectedOption, keyword });
   });
 });

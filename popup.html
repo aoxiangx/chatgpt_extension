@@ -6,7 +6,13 @@
 </head>
 <body>
   <h2>Filter and Highlight</h2>
-  <input type="text" id="keyword" placeholder="Enter keyword to highlight">
+  <input type="text" id="keyword" placeholder="Enter keyword">
+  <div>
+    <input type="radio" id="highlight" name="filterOption" value="highlight" checked>
+    <label for="highlight">Highlight</label>
+    <input type="radio" id="hide" name="filterOption" value="hide">
+    <label for="hide">Hide</label>
+  </div>
   <button id="applyFilter">Apply Filter</button>
 
   <script src="popup.js"></script>
