@@ -1,31 +1,40 @@
+// Select HTML elements
 const keywordInput = document.getElementById("keyword");
 const colourSelect = document.getElementById("colour");
-const applyButton = document.getElementById("applyHighlight");
-const removeButton = document.getElementById("removeHighlights");
+const highlightSwitch = document.getElementById("highlightSwitch");
+const hideSwitch = document.getElementById("hideSwitch");
+const saveButton = document.getElementById("saveSettings");
 
 // Load saved settings on popup open
-chrome.storage.sync.get(["keyword", "colour"], ({ keyword, colour }) => {
-  if (keyword) keywordInput.value = keyword;
-  if (colour) colourSelect.value = colour;
+chrome.storage.sync.get(["keyword", "colour", "highlightEnabled", "hideEnabled"], (data) => {
+  if (data.keyword) keywordInput.value = data.keyword;
+  if (data.colour) colourSelect.value = data.colour;
+  if (data.highlightEnabled !== undefined) highlightSwitch.checked = data.highlightEnabled;
+  if (data.hideEnabled !== undefined) hideSwitch.checked = data.hideEnabled;
 });
 
-// Apply highlight
-applyButton.addEventListener("click", () => {
+// Save settings on button click
+saveButton.addEventListener("click", () => {
   const keyword = keywordInput.value;
   const colour = colourSelect.value;
+  const highlightEnabled = highlightSwitch.checked;
+  const hideEnabled = hideSwitch.checked;
 
-  chrome.storage.sync.set({ keyword, colour }, () => {
-    console.log(`Keyword "${keyword}" and colour "${colour}" saved.`);
+  // Save settings to Chrome storage
+  chrome.storage.sync.set({
+    keyword,
+    colour,
+    highlightEnabled,
+    hideEnabled
+  }, () => {
+    console.log("Settings saved:", { keyword, colour, highlightEnabled, hideEnabled });
   });
 
+  // Send message to content script to apply settings
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { action: "highlight", keyword, colour });
-  });
-});
-
-// Remove highlights
-removeButton.addEventListener("click", () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { action: "removeHighlights" });
+    chrome.tabs.sendMessage(tabs[0].id, {
+      action: "applySettings",
+      settings: { keyword, colour, highlightEnabled, hideEnabled }
+    });
   });
 });

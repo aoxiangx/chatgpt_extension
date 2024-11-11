@@ -78,5 +78,24 @@ chrome.runtime.onMessage.addListener((request) => {
   }
 });
 
+// Function to apply settings received from popup.js
+function applySettings(settings) {
+  if (settings.highlightEnabled) {
+    highlightText(settings.keyword, settings.colour);
+  }
+  
+  if (settings.hideEnabled) {
+    hideContent(settings.keyword);
+  }
+}
+
+// Listener for messages from popup.js
+chrome.runtime.onMessage.addListener((request) => {
+  if (request.action === "applySettings") {
+    applySettings(request.settings);
+  }
+});
+
+
 // On page load, restore highlights
 document.addEventListener("DOMContentLoaded", restoreHighlights);

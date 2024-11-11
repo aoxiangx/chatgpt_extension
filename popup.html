@@ -1,24 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Content Filter and Highlighter</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Highlighter</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h2>Highlight Options</h2>
-  <input type="text" id="keyword" placeholder="Enter keyword">
-  
-  <div>
-    <label for="colour">Choose Colour:</label>
+  <div class="container">
+    <h2>Content Highlighter</h2>
+
+    <label for="keyword">Keyword:</label>
+    <input type="text" id="keyword" placeholder="Enter keyword">
+
+    <label for="colour">Highlight Colour:</label>
     <select id="colour">
       <option value="yellow">Yellow</option>
       <option value="pink">Pink</option>
       <option value="lightblue">Light Blue</option>
     </select>
+
+    <div class="switch-container">
+      <label for="highlightSwitch">Enable Highlighting</label>
+      <input type="checkbox" id="highlightSwitch">
+    </div>
+
+    <div class="switch-container">
+      <label for="hideSwitch">Enable Hiding</label>
+      <input type="checkbox" id="hideSwitch">
+    </div>
+
+    <button id="saveSettings">Save Settings</button>
   </div>
-  
-  <button id="applyHighlight">Highlight</button>
-  <button id="removeHighlights">Remove Highlights</button>
 
   <script src="popup.js"></script>
 </body>
