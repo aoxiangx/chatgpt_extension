@@ -58,12 +58,22 @@ button:hover {
   background-color: #45a049;
 }
 
-@media (max-width: 300px) {
-  body {
-    padding: 5px;
-  }
+.highlight {
+  display: inline !important;
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: normal;
+  color: black;
+}
 
-  h2 {
-    font-size: 1em;
-  }
+.highlight.yellow {
+  background-color: #ffeb3b !important;
+}
+
+.highlight.pink {
+  background-color: #ff80ab !important;
+}
+
+.highlight.lightblue {
+  background-color: #80d8ff !important;
 }

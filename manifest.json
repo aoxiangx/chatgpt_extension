@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "GPT-Content Filter and Highlighter",
+  "name": "GPT - Content Filter and Highlighter",
   "version": "1.0",
-  "description": "Filters and highlights specified content on web pages.",
+  "description": "Filter and highlight text based on keywords.",
   "permissions": ["activeTab", "storage"],
   "action": {
     "default_popup": "popup.html",

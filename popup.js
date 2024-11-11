@@ -1,4 +1,3 @@
-// Select HTML elements
 const keywordInput = document.getElementById("keyword");
 const colourSelect = document.getElementById("colour");
 const highlightSwitch = document.getElementById("highlightSwitch");
@@ -7,10 +6,10 @@ const saveButton = document.getElementById("saveSettings");
 
 // Load saved settings on popup open
 chrome.storage.sync.get(["keyword", "colour", "highlightEnabled", "hideEnabled"], (data) => {
-  if (data.keyword) keywordInput.value = data.keyword;
-  if (data.colour) colourSelect.value = data.colour;
-  if (data.highlightEnabled !== undefined) highlightSwitch.checked = data.highlightEnabled;
-  if (data.hideEnabled !== undefined) hideSwitch.checked = data.hideEnabled;
+  keywordInput.value = data.keyword || '';
+  colourSelect.value = data.colour || 'yellow';
+  highlightSwitch.checked = !!data.highlightEnabled;
+  hideSwitch.checked = !!data.hideEnabled;
 });
 
 // Save settings on button click
@@ -30,7 +29,7 @@ saveButton.addEventListener("click", () => {
     console.log("Settings saved:", { keyword, colour, highlightEnabled, hideEnabled });
   });
 
-  // Send message to content script to apply settings
+  // Send settings to content script
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, {
       action: "applySettings",
